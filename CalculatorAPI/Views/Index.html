@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal API Calculator</title>
+</head>
+<body>
+
+    <h2>Minimal API Calculator</h2>
+
+    <form id="calculator-form">
+        <input type="text" id="FirstInput" placeholder="Enter First Number" required>
+
+        <select id="Operation" required>
+            <option value="add">+</option>
+            <option value="subtract">-</option>
+            <option value="multiply">*</option>
+            <option value="divide">/</option>
+        </select>
+
+        <input type="text" id="SecondInput" placeholder="Enter Second Number" required>
+
+        <button type="submit">Calculate</button>
+    </form>
+
+    <h3><span id="result"></span></h3>
+
+    <script>
+        document.getElementById("calculator-form").addEventListener("submit", async function (event) {
+            event.preventDefault(); // Prevent form from reloading the page
+
+            // Collect input values
+            const firstInput = document.getElementById("FirstInput").value;
+            const secondInput = document.getElementById("SecondInput").value;
+            const operation = document.getElementById("Operation").value;
+
+            // Prepare request payload
+            const requestData = {
+                FirstInput: parseFloat(firstInput),
+                SecondInput: parseFloat(secondInput),
+                Operation: operation
+            };
+
+            try {
+                const response = await fetch("/calculate", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(requestData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById("result").textContent = `Result: ${data.result}`;
+                } else {
+                    document.getElementById("result").textContent = `Error: ${data.error}`;
+                }
+            } catch (error) {
+                document.getElementById("result").textContent = "Network error, please try again.";
+            }
+        });
+    </script>
+
+</body>
+</html>
